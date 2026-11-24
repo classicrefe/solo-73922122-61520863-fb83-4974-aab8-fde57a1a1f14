@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}批次 {{ batch.batch_no }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('main.index') }}">← 返回台账</a></p>
+<h2>批次 {{ batch.batch_no }}</h2>
+<p>作业卡：<a href="{{ url_for('main.card_detail', card_id=batch.card_id) }}">{{ batch.card_code }} · {{ batch.card_name }}</a></p>
+<p>提交时间：{{ batch.submitted_at }}</p>
+
+<h3>原异常明细（更正清单不改动这些记录）</h3>
+<table>
+  <thead><tr><th>项目</th><th>明细</th></tr></thead>
+  <tbody>
+    {% for row in batch.abnormalities %}
+    <tr><td>{{ row.item_code }} {{ row.item_name }}</td><td>{{ row.detail or "—" }}</td></tr>
+    {% else %}
+    <tr><td colspan="2">本批无异常</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

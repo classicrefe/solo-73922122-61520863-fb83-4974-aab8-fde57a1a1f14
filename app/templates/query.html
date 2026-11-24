@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}按项目查批数{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('main.index') }}">← 返回台账</a></p>
+<h2>按项目查批数</h2>
+<form method="get" action="{{ url_for('main.query') }}">
+  <label>项目
+    <select name="item_id" required>
+      <option value="">请选择</option>
+      {% for item in items %}
+      <option value="{{ item.id }}" {{ "selected" if selected_item and selected_item.id == item.id else "" }}>
+        {{ item.code }} {{ item.name }}
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit">查询</button>
+</form>
+
+{% if result %}
+<h3>项目 {{ selected_item.code }} {{ selected_item.name }}</h3>
+<table>
+  <thead><tr><th>口径（已提交）</th><th>批数</th></tr></thead>
+  <tbody>
+    <tr><td>有异常</td><td data-count="abnormal">{{ result.abnormal }}</td></tr>
+    <tr><td>已检无异常</td><td data-count="clean">{{ result.clean }}</td></tr>
+    <tr><td>未检</td><td data-count="not_inspected">{{ result.not_inspected }}</td></tr>
+  </tbody>
+</table>
+<p class="hint">三种口径合计恒等于全部已提交批数。</p>
+{% elif selected_item %}
+<p class="error">项目不存在。</p>
+{% endif %}
+{% endblock %}

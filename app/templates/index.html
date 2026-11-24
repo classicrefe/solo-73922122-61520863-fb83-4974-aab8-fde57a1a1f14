@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}验布供数台账{% endblock %}
+{% block content %}
+<section id="submit" class="panel">
+  <h2>登记作业卡（提交一批）</h2>
+  <form method="post" action="{{ url_for('main.submit_batch') }}" class="stack">
+    <label>批号 <input name="batch_no" required maxlength="64" placeholder="唯一批号"></label>
+    <label>所用作业卡
+      <select name="card_id" id="submit-card" required>
+        <option value="">请选择</option>
+        {% for card in cards %}
+        <option value="{{ card.id }}" data-items="{{ card.item_ids | join(',') }}">
+          {{ card.code }} · {{ card.name }}（清单 {{ card.item_ids | length }} 项）
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+    <fieldset>
+      <legend>异常项目（可空）</legend>
+      <p class="hint">仅该卡实检清单内的项目可选；不在清单内的选择会被服务端整批退回。</p>
+      <div id="abnormal-items" class="checks">
+        {% for item in items %}
+        <label class="check" data-item="{{ item.id }}">
+          <input type="checkbox" name="abnormal_item" value="{{ item.id }}" class="abnormal-toggle">
+          {{ item.code }} {{ item.name }}
+          <input name="detail_{{ item.id }}" placeholder="异常明细（可选）" class="detail">
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <button type="submit">提交入库</button>
+  </form>
+</section>
+
+<section id="query" class="panel">
+  <h2>按项目查批数</h2>
+  <form method="get" action="{{ url_for('main.query') }}">
+    <label>项目
+      <select name="item_id" required>
+        <option value="">请选择</option>
+        {% for item in items %}
+        <option value="{{ item.id }}">{{ item.code }} {{ item.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit">查询</button>
+  </form>
+</section>
+
+<section id="cards" class="panel">
+  <h2>作业卡实检清单</h2>
+  <p class="hint">更正清单会保留原异常明细，并按新清单重计引用该卡的已收批次。若原异常项目会被移出清单，整次退回。</p>
+  {% for card in cards %}
+  <form method="post" action="{{ url_for('main.correct_card', card_id=card.id) }}"
+        id="card-{{ card.id }}" class="card-form">
+    <h3>{{ card.code }} · {{ card.name }}
+      <span class="badge">已收 {{ card.submitted_batch_count }} 批</span>
+      <a href="{{ url_for('main.card_detail', card_id=card.id) }}">查看批次</a>
+    </h3>
+    <div class="checks">
+      {% for item in items %}
+      <label class="check">
+        <input type="checkbox" name="item_ids" value="{{ item.id }}"
+               {{ "checked" if item.id in card.item_ids else "" }}>
+        {{ item.code }} {{ item.name }}
+      </label>
+      {% endfor %}
+    </div>
+    <button type="submit">保存实检清单</button>
+  </form>
+  {% endfor %}
+</section>
+
+<section id="batches" class="panel">
+  <h2>已登记批次</h2>
+  <table>
+    <thead><tr><th>批号</th><th>作业卡</th><th>异常项数</th><th>提交时间</th></tr></thead>
+    <tbody>
+      {% for batch in batches %}
+      <tr>
+        <td><a href="{{ url_for('main.batch_detail', batch_id=batch.id) }}">{{ batch.batch_no }}</a></td>
+        <td>{{ batch.card_code }}</td>
+        <td>{{ batch.abnormal_count }}</td>
+        <td>{{ batch.submitted_at }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">暂无</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

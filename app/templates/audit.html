@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}核对供数{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('main.index') }}">← 返回台账</a></p>
+<h2>核对供数</h2>
+<p class="hint">按原始批次与异常明细逐条重算，与物化计数比对。仅用于核对，不参与查数或更正。</p>
+<table>
+  <thead><tr><th>项</th><th>值</th></tr></thead>
+  <tbody>
+    <tr><td>计数不一致的 (卡, 项目) 数</td><td>{{ result.mismatches }}</td></tr>
+    <tr><td>卡已收批数与实际批数不一致的卡数</td><td>{{ result.batch_count_mismatches }}</td></tr>
+    <tr><td>清单外的异常明细条数</td><td>{{ result.out_of_list_details }}</td></tr>
+    <tr><td>有异常</td><td>{{ result.abnormal }}</td></tr>
+    <tr><td>已检无异常</td><td>{{ result.clean }}</td></tr>
+    <tr><td>未检</td><td>{{ result.not_inspected }}</td></tr>
+  </tbody>
+</table>
+{% endblock %}

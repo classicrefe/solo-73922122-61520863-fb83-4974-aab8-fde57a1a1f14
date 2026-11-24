@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}验布供数台账{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <a class="brand" href="{{ url_for('main.index') }}">验布作业卡供数台账</a>
+    <nav>
+      <a href="{{ url_for('main.index') }}#submit">登记批次</a>
+      <a href="{{ url_for('main.query') }}">按项目查数</a>
+      <a href="{{ url_for('main.audit') }}">核对供数</a>
+    </nav>
+  </header>
+  <main>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <p class="flash {{ category }}">{{ message }}</p>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

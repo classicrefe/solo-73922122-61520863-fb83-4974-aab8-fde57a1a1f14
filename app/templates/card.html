@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ card.code }} · 批次{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('main.index') }}">← 返回台账</a></p>
+<h2>{{ card.code }} · {{ card.name }}</h2>
+<p>已收（已提交）批次：{{ card.submitted_batch_count }}</p>
+<p><a href="{{ url_for('main.audit') }}">核对供数计数</a></p>
+
+<h3>当前实检清单</h3>
+<ul class="plain">
+  {% for item in items %}
+  <li>{{ item.code }} {{ item.name }} — {{ "实检" if item.on_list else "不在清单" }}</li>
+  {% endfor %}
+</ul>
+
+<h3>引用本卡的批次</h3>
+<table>
+  <thead><tr><th>批号</th><th>提交时间</th></tr></thead>
+  <tbody>
+    {% for batch in batches %}
+    <tr>
+      <td><a href="{{ url_for('main.batch_detail', batch_id=batch.id) }}">{{ batch.batch_no }}</a></td>
+      <td>{{ batch.submitted_at }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="2">暂无</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

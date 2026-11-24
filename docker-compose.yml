@@ -1,0 +1,26 @@
+services:
+  web:
+    build: .
+    image: inspection-supply-ledger:local
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    environment:
+      # Change this for anything beyond local use.
+      SECRET_KEY: "${SECRET_KEY:-local-dev-secret}"
+      SQLITE_BUSY_TIMEOUT_MS: "15000"
+    volumes:
+      - ledger-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  ledger-data:
